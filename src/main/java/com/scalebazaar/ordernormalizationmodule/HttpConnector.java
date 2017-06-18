@@ -25,17 +25,12 @@ import org.apache.http.client.methods.HttpGet;
  * @author abmukh
  */
 public class HttpConnector {
-    
-    /*public static void main(String[] args) {
-        
-        System.out.println(new File("sellers").listFiles().length);
-        
-        
-	  /*try {
+
+    public static void sendGetRequest(String requestUrl) {
+        try {
 
 		DefaultHttpClient httpClient = new DefaultHttpClient();
-		HttpGet getRequest = new HttpGet(
-			"https://api.sellercenter.lazada.com.my?Action=GetOrders&CreatedAfter=2014-02-25T23%3A46%3A11%2B00%3A00&Format=json&Timestamp=2017-06-17T18%3A53%3A40%2B00%3A00&UserID=kandu2017.sl%40gmail.com&Version=1.0&Signature=b65f5f5e5c583939199658935958ad763437df69c31afc3708eb981182a05cbc");
+		HttpGet getRequest = new HttpGet(requestUrl);
 		getRequest.addHeader("accept", "application/json");
 
 		HttpResponse response = httpClient.execute(getRequest);
@@ -64,8 +59,5 @@ public class HttpConnector {
 
 		e.printStackTrace();
 	  }
-
-
-    }*/
-    
+    }
 }
