@@ -4,6 +4,8 @@
 	<property name="useridlazada">kandu2017.sl%40gmail.com</property>
 	<property name="apikeylazada">dHw1RQTaGlFi4bHrHGxKe6ys1JOy_mzzahWDBWpWX0scNU_W0YLz_vFX</property>
 	<property name="createdaftertimelazada">2014-02-25T23%3A46%3A11%2B00%3A00</property>
+	<property name="openapikey11street">15af320fe0cc9d3f6571a114fda4fd1c</property>
+	<property name="createdaftertime11street">150620171200</property>
 </properties>
-<marketplaces>lazada</marketplaces>
+<marketplaces>lazada,11street</marketplaces>
 </seller>

@@ -25,7 +25,8 @@ public class Utils {
 
     public static JSONObject addSystemProperties(JSONObject jobj) {
         try {
-            jobj.put("currenttimestamp", getCurrentTime());
+            jobj.put("currenttimestampYYYYMMDDTHHMMSSZ", getCurrentTime("yyyy-MM-dd'T'HH:mm:ssZ"));
+            jobj.put("currenttimestampDDMMYYYYHHMM", getCurrentTime("ddMMyyyyHHmm"));
         } catch (JSONException ex) {
             Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedEncodingException ex) {
@@ -34,12 +35,12 @@ public class Utils {
         return jobj;
     }
 
-    public static String getCurrentTime() throws UnsupportedEncodingException {
-        return URLEncoder.encode(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()), "UTF-8");
+    public static String getCurrentTime(String format) throws UnsupportedEncodingException {
+        return URLEncoder.encode(new SimpleDateFormat(format).format(new Date()), "UTF-8");
     }
 
     public static void main(String[] args) throws Exception {
-        
+        //System.out.println(getCurrentTime("ddMMyyyyHHmm"));
     }
 
     public static String HMACSHA256encode(String key, String data) throws Exception {

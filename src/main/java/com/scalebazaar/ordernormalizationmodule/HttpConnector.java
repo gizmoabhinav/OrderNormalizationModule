@@ -5,7 +5,6 @@
  */
 package com.scalebazaar.ordernormalizationmodule;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +16,13 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -26,38 +30,48 @@ import org.apache.http.client.methods.HttpGet;
  */
 public class HttpConnector {
 
-    public static void sendGetRequest(String requestUrl) {
+    public static void sendGetRequest(String requestUrl, JSONObject headers) {
         try {
 
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-		HttpGet getRequest = new HttpGet(requestUrl);
-		getRequest.addHeader("accept", "application/json");
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpGet getRequest = new HttpGet(requestUrl);
+            Iterator<String> keys = headers.keys();
 
-		HttpResponse response = httpClient.execute(getRequest);
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                if (headers.get(key) instanceof String) {
+                   getRequest.addHeader(key, headers.get(key).toString());
+                }
+            }
+            System.out.println(headers.toString());
 
-		if (response.getStatusLine().getStatusCode() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "
-			   + response.getStatusLine().getStatusCode());
-		}
+            HttpResponse response = httpClient.execute(getRequest);
 
-		BufferedReader br = new BufferedReader(
-                         new InputStreamReader((response.getEntity().getContent())));
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
+            }
 
-		String output;
-		System.out.println("Output from Server .... \n");
-		while ((output = br.readLine()) != null) {
-			System.out.println(output);
-		}
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader((response.getEntity().getContent())));
 
-		httpClient.getConnectionManager().shutdown();
+            String output;
+            System.out.println("Output from Server .... \n");
+            while ((output = br.readLine()) != null) {
+                System.out.println(output);
+            }
 
-	  } catch (ClientProtocolException e) {
+            httpClient.getConnectionManager().shutdown();
 
-		e.printStackTrace();
+        } catch (ClientProtocolException e) {
 
-	  } catch (IOException e) {
+            e.printStackTrace();
 
-		e.printStackTrace();
-	  }
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        } catch (JSONException ex) {
+            Logger.getLogger(HttpConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

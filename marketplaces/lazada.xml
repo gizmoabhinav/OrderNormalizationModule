@@ -6,10 +6,10 @@
 		<param>Action=GetOrders</param>
 		<param>CreatedAfter=${createdaftertimelazada}</param>
 		<param>Format=json</param>
-		<param>Timestamp=${currenttimestamp}</param>
+		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
 		<param>UserID=${useridlazada}</param>
 		<param>Version=1.0</param>
-		<param>Signature=^{HMACSHA256,Action=GetOrders&amp;CreatedAfter=${createdaftertimelazada}&amp;Format=json&amp;Timestamp=${currenttimestamp}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}</param>
+		<param>Signature=^{HMACSHA256,Action=GetOrders&amp;CreatedAfter=${createdaftertimelazada}&amp;Format=json&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}</param>
 	</request>
 	<response>
 	</response>

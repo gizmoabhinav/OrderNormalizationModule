@@ -83,6 +83,8 @@ public class Main {
         String marketplaces[] = seller.getMarketPlaces();
         for (int i = 0; i < marketplaces.length; i++) {
             File marketplaceFile = new File("marketplaces/" + marketplaces[i] + ".xml");
+
+            //Todo: check for file sanity
             try {
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -93,21 +95,52 @@ public class Main {
                 Node ordersAPI = doc.getElementsByTagName("ordersapi").item(0);
                 Node requestnode = ((Element) ordersAPI).getElementsByTagName("request").item(0);
                 StringBuilder requestUrl = new StringBuilder();
-                requestUrl.append(((Element) requestnode).getElementsByTagName("host").item(0).getTextContent());
 
+                //compute host
+                String host = ((Element) requestnode).getElementsByTagName("host").item(0).getTextContent();
+                StringBuffer sb = new StringBuffer();
+                String regex = "(\\$\\{[^}]+\\})";
+                Pattern p = Pattern.compile(regex);
+                Matcher m = p.matcher(host);
+                while (m.find()) {
+                    String variable = m.group(1);
+                    variable = variable.substring(2, variable.length() - 1);
+                    String repString = properties.get(variable).toString();
+                    if (repString != null) {
+                        m.appendReplacement(sb, repString);
+                    }
+                }
+                m.appendTail(sb);
+                host = sb.toString();
+                sb = new StringBuffer();
+                regex = "(\\^\\{[^}]+\\})";
+                p = Pattern.compile(regex);
+                m = p.matcher(host);
+                while (m.find()) {
+                    String function = m.group(1);
+                    function = function.substring(2, function.length() - 1);
+                    if (function.split(",")[0].equals("HMACSHA256")) {
+                        m.appendReplacement(sb, Utils.HMACSHA256encode(function.split(",")[2], function.split(",")[1]));
+                    }
+                }
+                m.appendTail(sb);
+                host = sb.toString();
+                requestUrl.append(host);
+                
+                // compute params
                 NodeList paramsNodes = ((Element) requestnode).getElementsByTagName("param");
                 for (int j = 0; j < paramsNodes.getLength(); j++) {
-                    if(j!=0){
+                    if (j != 0) {
                         requestUrl.append("&");
                     }
                     String param = paramsNodes.item(j).getTextContent();
-                    StringBuffer sb = new StringBuffer();
-                    String regex = "(\\$\\{[^}]+\\})";
-                    Pattern p = Pattern.compile(regex);
-                    Matcher m = p.matcher(param);
+                    sb = new StringBuffer();
+                    regex = "(\\$\\{[^}]+\\})";
+                    p = Pattern.compile(regex);
+                    m = p.matcher(param);
                     while (m.find()) {
                         String variable = m.group(1);
-                        variable = variable.substring(2,variable.length()-1);
+                        variable = variable.substring(2, variable.length() - 1);
                         String repString = properties.get(variable).toString();
                         if (repString != null) {
                             m.appendReplacement(sb, repString);
@@ -121,8 +154,8 @@ public class Main {
                     m = p.matcher(param);
                     while (m.find()) {
                         String function = m.group(1);
-                        function = function.substring(2,function.length()-1);
-                        if(function.split(",")[0].equals("HMACSHA256")) {
+                        function = function.substring(2, function.length() - 1);
+                        if (function.split(",")[0].equals("HMACSHA256")) {
                             m.appendReplacement(sb, Utils.HMACSHA256encode(function.split(",")[2], function.split(",")[1]));
                         }
                     }
@@ -132,8 +165,47 @@ public class Main {
                 }
 
                 System.out.println(requestUrl.toString());
-                
-                HttpConnector.sendGetRequest(requestUrl.toString());
+
+                //compute headers
+                JSONObject headers = new JSONObject();
+
+                NodeList headerNodes = ((Element) requestnode).getElementsByTagName("header");
+                for (int j = 0; j < headerNodes.getLength(); j++) {
+                    if (j != 0) {
+                        requestUrl.append("&");
+                    }
+                    String headerValue = headerNodes.item(j).getTextContent();
+                    sb = new StringBuffer();
+                    regex = "(\\$\\{[^}]+\\})";
+                    p = Pattern.compile(regex);
+                    m = p.matcher(headerValue);
+                    while (m.find()) {
+                        String variable = m.group(1);
+                        variable = variable.substring(2, variable.length() - 1);
+                        String repString = properties.get(variable).toString();
+                        if (repString != null) {
+                            m.appendReplacement(sb, repString);
+                        }
+                    }
+                    m.appendTail(sb);
+                    headerValue = sb.toString();
+                    sb = new StringBuffer();
+                    regex = "(\\^\\{[^}]+\\})";
+                    p = Pattern.compile(regex);
+                    m = p.matcher(headerValue);
+                    while (m.find()) {
+                        String function = m.group(1);
+                        function = function.substring(2, function.length() - 1);
+                        if (function.split(",")[0].equals("HMACSHA256")) {
+                            m.appendReplacement(sb, Utils.HMACSHA256encode(function.split(",")[2], function.split(",")[1]));
+                        }
+                    }
+                    m.appendTail(sb);
+                    headerValue = sb.toString();
+                    headers.put(((Element) headerNodes.item(j)).getAttribute("name"), sb.toString());
+                }
+
+                HttpConnector.sendGetRequest(requestUrl.toString(), headers);
 
             } catch (SAXException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
