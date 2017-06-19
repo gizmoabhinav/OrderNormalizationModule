@@ -42,7 +42,9 @@ public class Main {
 
     public static void main(String args[]) {
         Seller[] sellers = loadSellers();
-        getOrders(sellers[0]);
+        for(Seller seller : sellers) {
+            getOrders(seller);
+        }
     }
 
     public static Seller[] loadSellers() {
@@ -54,7 +56,7 @@ public class Main {
             try {
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                Document doc = dBuilder.parse(sellerFiles[0]);
+                Document doc = dBuilder.parse(sellerFiles[i]);
                 //Todo : check formatting of the xml file and validate
 
                 doc.getDocumentElement().normalize();
@@ -174,35 +176,9 @@ public class Main {
 
                 //compute host
                 String host = ((Element) requestnode).getElementsByTagName("host").item(0).getTextContent();
-                StringBuffer sb = new StringBuffer();
-                String regex = "(\\$\\{[^}]+\\})";
-                Pattern p = Pattern.compile(regex);
-                Matcher m = p.matcher(host);
-                while (m.find()) {
-                    String variable = m.group(1);
-                    variable = variable.substring(2, variable.length() - 1);
-                    String repString = properties.get(variable).toString();
-                    if (repString != null) {
-                        m.appendReplacement(sb, repString);
-                    }
-                }
-                m.appendTail(sb);
-                host = sb.toString();
-                sb = new StringBuffer();
-                regex = "(\\^\\{[^}]+\\})";
-                p = Pattern.compile(regex);
-                m = p.matcher(host);
-                while (m.find()) {
-                    String function = m.group(1);
-                    function = function.substring(2, function.length() - 1);
-                    if (function.split(",")[0].equals("HMACSHA256")) {
-                        m.appendReplacement(sb, Utils.HMACSHA256encode(function.split(",")[2], function.split(",")[1]));
-                    }
-                }
-                m.appendTail(sb);
-                host = sb.toString();
-                requestUrl.append(host);
-                
+
+                requestUrl.append(computeXmlVariables(host,properties));
+
                 // compute params
                 NodeList paramsNodes = ((Element) requestnode).getElementsByTagName("param");
                 for (int j = 0; j < paramsNodes.getLength(); j++) {
@@ -210,34 +186,7 @@ public class Main {
                         requestUrl.append("&");
                     }
                     String param = paramsNodes.item(j).getTextContent();
-                    sb = new StringBuffer();
-                    regex = "(\\$\\{[^}]+\\})";
-                    p = Pattern.compile(regex);
-                    m = p.matcher(param);
-                    while (m.find()) {
-                        String variable = m.group(1);
-                        variable = variable.substring(2, variable.length() - 1);
-                        String repString = properties.get(variable).toString();
-                        if (repString != null) {
-                            m.appendReplacement(sb, repString);
-                        }
-                    }
-                    m.appendTail(sb);
-                    param = sb.toString();
-                    sb = new StringBuffer();
-                    regex = "(\\^\\{[^}]+\\})";
-                    p = Pattern.compile(regex);
-                    m = p.matcher(param);
-                    while (m.find()) {
-                        String function = m.group(1);
-                        function = function.substring(2, function.length() - 1);
-                        if (function.split(",")[0].equals("HMACSHA256")) {
-                            m.appendReplacement(sb, Utils.HMACSHA256encode(function.split(",")[2], function.split(",")[1]));
-                        }
-                    }
-                    m.appendTail(sb);
-                    param = sb.toString();
-                    requestUrl.append(param);
+                    requestUrl.append(computeXmlVariables(param,properties));
                 }
 
                 System.out.println(requestUrl.toString());
@@ -251,34 +200,7 @@ public class Main {
                         requestUrl.append("&");
                     }
                     String headerValue = headerNodes.item(j).getTextContent();
-                    sb = new StringBuffer();
-                    regex = "(\\$\\{[^}]+\\})";
-                    p = Pattern.compile(regex);
-                    m = p.matcher(headerValue);
-                    while (m.find()) {
-                        String variable = m.group(1);
-                        variable = variable.substring(2, variable.length() - 1);
-                        String repString = properties.get(variable).toString();
-                        if (repString != null) {
-                            m.appendReplacement(sb, repString);
-                        }
-                    }
-                    m.appendTail(sb);
-                    headerValue = sb.toString();
-                    sb = new StringBuffer();
-                    regex = "(\\^\\{[^}]+\\})";
-                    p = Pattern.compile(regex);
-                    m = p.matcher(headerValue);
-                    while (m.find()) {
-                        String function = m.group(1);
-                        function = function.substring(2, function.length() - 1);
-                        if (function.split(",")[0].equals("HMACSHA256")) {
-                            m.appendReplacement(sb, Utils.HMACSHA256encode(function.split(",")[2], function.split(",")[1]));
-                        }
-                    }
-                    m.appendTail(sb);
-                    headerValue = sb.toString();
-                    headers.put(((Element) headerNodes.item(j)).getAttribute("name"), sb.toString());
+                    headers.put(((Element) headerNodes.item(j)).getAttribute("name"), computeXmlVariables(headerValue,properties));
                 }
 
                 HttpConnector.sendGetRequest(requestUrl.toString(), headers);
@@ -295,6 +217,37 @@ public class Main {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+    private static String computeXmlVariables(String input, JSONObject properties) throws JSONException, Exception {
+        StringBuffer sb = new StringBuffer();
+        String regex = "(\\$\\{[^}]+\\})";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(input);
+        while (m.find()) {
+            String variable = m.group(1);
+            variable = variable.substring(2, variable.length() - 1);
+            String repString = properties.get(variable).toString();
+            if (repString != null) {
+                m.appendReplacement(sb, repString);
+            }
+        }
+        m.appendTail(sb);
+        input = sb.toString();
+        sb = new StringBuffer();
+        regex = "(\\^\\{[^}]+\\})";
+        p = Pattern.compile(regex);
+        m = p.matcher(input);
+        while (m.find()) {
+            String function = m.group(1);
+            function = function.substring(2, function.length() - 1);
+            if (function.split(",")[0].equals("HMACSHA256")) {
+                m.appendReplacement(sb, Utils.HMACSHA256encode(function.split(",")[2], function.split(",")[1]));
+            }
+        }
+        m.appendTail(sb);
+        input = sb.toString();
+        return input;
     }
 
 }
