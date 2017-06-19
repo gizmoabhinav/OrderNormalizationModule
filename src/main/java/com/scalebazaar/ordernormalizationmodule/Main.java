@@ -26,6 +26,18 @@ import org.xml.sax.SAXException;
  *
  * @author abmukh
  */
+
+import org.json.JSONArray;
+import org.json.JSONStringer;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+
+import java.net.URL;
+import java.net.HttpURLConnection;
+
+ 
 public class Main {
 
     public static void main(String args[]) {
@@ -77,7 +89,71 @@ public class Main {
         }
         return sellers;
     }
+    public static void getOrder_Bonanza(String[] args) {
+        try {
+            String devId = "myDevId";
+            String certId = "myCertId";
 
+            URL url = new URL("http://api.bonanza.com/api_requests/secure_request");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("X-BONANZLE-API-DEV-NAME", devId);
+            connection.setRequestProperty("X-BONANZLE-API-CERT-NAME", certId);
+
+            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+
+            String jsonPayload = new JSONStringer()
+                .object()
+                    .key("requesterCredentials")
+                    .object()
+                        .key("bonanzleAuthToken")
+                        .value("myAuthToken")
+                    .endObject()
+                    .key("orderRole")
+                    .value("seller")
+                .endObject()
+                .toString();
+
+            String requestName = "GetOrdersRequest";
+
+            String toWrite = requestName + "=" + jsonPayload;
+
+            writer.write(toWrite);
+            writer.flush();
+            writer.close();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String response = in.readLine();
+
+            JSONObject jsonResponse = new JSONObject(response);
+
+            if (jsonResponse.optString("ack").equals("Success") 
+                    && jsonResponse.optJSONObject("getOrdersResponse") != null) {
+
+                // Success! Now read more keys from the json object
+                JSONArray orderArray = jsonResponse.optJSONObject("getOrdersResponse").optJSONArray("orderArray");
+
+                for (int i = 0; i < orderArray.length(); i++) {
+                    JSONObject order = orderArray.optJSONObject(i).optJSONObject("order");
+                    System.out.println("ORDER #" + i + " ======================");
+                    System.out.println("Order ID: " + order.optInt("orderID"));
+                    System.out.println("Buyer's Username: " + order.optString("buyerUserName"));
+                    System.out.println("Amount Paid: " + order.optString("amountPaid"));
+                    System.out.println("Creation Time: " + order.optString("createdTime"));
+                    System.out.println("Status: " + order.optJSONObject("checkoutStatus").optString("status"));
+                }
+            } else {
+                System.out.println(jsonResponse);
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
     public static void getOrders(Seller seller) {
         JSONObject properties = Utils.addSystemProperties(seller.getProperties());
         String marketplaces[] = seller.getMarketPlaces();
