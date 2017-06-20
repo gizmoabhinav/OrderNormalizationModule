@@ -74,4 +74,49 @@ public class HttpConnector {
             Logger.getLogger(HttpConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public static void sendPostRequest(String requestUrl, JSONObject headers) {
+        try {
+
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost getRequest = new HttpPost(requestUrl);
+            Iterator<String> keys = headers.keys();
+
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                if (headers.get(key) instanceof String) {
+                   getRequest.addHeader(key, headers.get(key).toString());
+                }
+            }
+            System.out.println(headers.toString());
+
+            HttpResponse response = httpClient.execute(getRequest);
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new RuntimeException("Failed : HTTP error code : "
+                        + response.getStatusLine().getStatusCode());
+            }
+
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader((response.getEntity().getContent())));
+
+            String output;
+            System.out.println("Output from Server .... \n");
+            while ((output = br.readLine()) != null) {
+                System.out.println(output);
+            }
+
+            httpClient.getConnectionManager().shutdown();
+
+        } catch (ClientProtocolException e) {
+
+            e.printStackTrace();
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        } catch (JSONException ex) {
+            Logger.getLogger(HttpConnector.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

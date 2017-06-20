@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,14 +41,20 @@ public class Utils {
     }
 
     public static void main(String[] args) throws Exception {
-        //System.out.println(getCurrentTime("ddMMyyyyHHmm"));
     }
 
-    public static String HMACSHA256encode(String key, String data) throws Exception {
-        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-        SecretKeySpec secret_key = new SecretKeySpec(key.getBytes("UTF-8"), "HmacSHA256");
-        sha256_HMAC.init(secret_key);
+    public static String HMACSHA256encode(String key, String data) throws Exception {        
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(key.getBytes("UTF-8"),"HmacSHA256"));
+        byte[] signature = mac.doFinal(data.getBytes("UTF-8"));
+        return Hex.encodeHexString(signature);
+    }
 
-        return Hex.encodeHexString(sha256_HMAC.doFinal(data.getBytes("UTF-8")));
+    public static String HMACSHA256encodeBase64(String key, String data) throws Exception {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(key.getBytes("UTF-8"),"HmacSHA256"));
+        byte[] signature = mac.doFinal(data.getBytes("UTF-8"));
+        String signatureBase64 = URLEncoder.encode(new String(Base64.encodeBase64(signature),"UTF-8"),"UTF-8");
+        return signatureBase64;
     }
 }

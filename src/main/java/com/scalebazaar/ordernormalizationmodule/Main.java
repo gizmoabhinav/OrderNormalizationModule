@@ -176,7 +176,6 @@ public class Main {
 
                 //compute host
                 String host = ((Element) requestnode).getElementsByTagName("host").item(0).getTextContent();
-
                 requestUrl.append(computeXmlVariables(host,properties));
 
                 // compute params
@@ -203,7 +202,12 @@ public class Main {
                     headers.put(((Element) headerNodes.item(j)).getAttribute("name"), computeXmlVariables(headerValue,properties));
                 }
 
-                HttpConnector.sendGetRequest(requestUrl.toString(), headers);
+                
+                if(((Element) requestnode).getAttribute("type").equals("GET")) {
+                    HttpConnector.sendGetRequest(requestUrl.toString(), headers);
+                }else if (((Element) requestnode).getAttribute("type").equals("POST")) {
+                    HttpConnector.sendPostRequest(requestUrl.toString(), headers);
+                }
 
             } catch (SAXException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -243,6 +247,8 @@ public class Main {
             function = function.substring(2, function.length() - 1);
             if (function.split(",")[0].equals("HMACSHA256")) {
                 m.appendReplacement(sb, Utils.HMACSHA256encode(function.split(",")[2], function.split(",")[1]));
+            } else if (function.split(",")[0].equals("HMACSHA256BASE64")) {
+                m.appendReplacement(sb, Utils.HMACSHA256encodeBase64(function.split(",")[2], function.split(",")[1]));
             }
         }
         m.appendTail(sb);
