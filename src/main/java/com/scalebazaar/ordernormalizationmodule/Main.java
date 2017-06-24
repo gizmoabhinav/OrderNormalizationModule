@@ -48,7 +48,7 @@ public class Main {
     }
 
     public static Seller[] loadSellers() {
-        File sellerDir = new File("sellers");
+        File sellerDir = new File("..\\..\\sellers");
         int sellerCount = sellerDir.listFiles().length;
         File[] sellerFiles = sellerDir.listFiles();
         Seller[] sellers = new Seller[sellerCount];
@@ -76,7 +76,7 @@ public class Main {
                     properties.put(variable, value);
                 }
 
-                sellers[i].setProperties(properties);
+                sellers[i].setProperties(properties.toString());
 
                 sellers[i].setMarketPlaces(doc.getElementsByTagName("marketplaces").item(0).getTextContent().split(","));
             } catch (SAXException ex) {
@@ -157,7 +157,12 @@ public class Main {
     }
     
     public static void getOrders(Seller seller) {
-        JSONObject properties = Utils.addSystemProperties(seller.getProperties());
+        JSONObject properties = null;
+        try {
+            properties = Utils.addSystemProperties(new JSONObject(seller.getProperties()));
+        } catch (JSONException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
         String marketplaces[] = seller.getMarketPlaces();
         for (int i = 0; i < marketplaces.length; i++) {
             File marketplaceFile = new File("marketplaces/" + marketplaces[i] + ".xml");
@@ -176,7 +181,7 @@ public class Main {
 
                 //compute host
                 String host = ((Element) requestnode).getElementsByTagName("host").item(0).getTextContent();
-                requestUrl.append(computeXmlVariables(host,properties));
+                requestUrl.append(computeXmlVariables(host,new JSONObject(properties)));
 
                 // compute params
                 NodeList paramsNodes = ((Element) requestnode).getElementsByTagName("param");

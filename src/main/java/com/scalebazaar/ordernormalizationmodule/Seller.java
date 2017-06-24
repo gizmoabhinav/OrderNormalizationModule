@@ -13,7 +13,7 @@ import org.json.JSONObject;
 public class Seller {
     private int id;
     private String name;
-    private JSONObject properties;
+    private String properties;
     private String[] marketPlaces;
 
     public int getId() {
@@ -32,11 +32,11 @@ public class Seller {
         this.name = name;
     }
 
-    public JSONObject getProperties() {
+    public String getProperties() {
         return properties;
     }
 
-    public void setProperties(JSONObject properties) {
+    public void setProperties(String properties) {
         this.properties = properties;
     }
 

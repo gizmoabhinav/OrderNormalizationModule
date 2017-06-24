@@ -34,17 +34,19 @@ import org.xml.sax.SAXException;
 @Path("/OrdersAPI")
 public class RestEndpoint {
 
+    public static HashMap<Integer,Seller> sList = new HashMap<Integer,Seller>();
+    
     @GET
     @Path("/GetOrders")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getMsg(
             @QueryParam("sellerid") String sellerid,
-            @QueryParam("marketplaceid") String msarketplaceid,
+            @QueryParam("marketplaceid") String marketplaceid,
             @QueryParam("lasttimestamp") String lasttiemstamp) {
 
         Order order = new Order();
         order.setSellerid(sellerid);
-        order.setMarketplaceid(msarketplaceid);
+        order.setMarketplaceid(marketplaceid);
         return Response.status(200).entity(order).build();
 
     }
@@ -52,9 +54,8 @@ public class RestEndpoint {
     @GET
     @Path("/LoadSellers")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSellers() {
-        HashMap<Integer, String> sellerList = new HashMap<Integer, String>();
-        /*File sellerDir = new File("sellers");
+    public Response loadSellers() {
+        File sellerDir = new File("../../sellers");
         int sellerCount = sellerDir.listFiles().length;
         File[] sellerFiles = sellerDir.listFiles();
         Seller[] sellers = new Seller[sellerCount];
@@ -82,9 +83,11 @@ public class RestEndpoint {
                     properties.put(variable, value);
                 }
 
-                sellers[i].setProperties(properties);
+                sellers[i].setProperties(properties.toString());
 
                 sellers[i].setMarketPlaces(doc.getElementsByTagName("marketplaces").item(0).getTextContent().split(","));
+                
+                sList.put(sellers[i].getId(), sellers[i]);
             } catch (SAXException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -94,9 +97,22 @@ public class RestEndpoint {
             } catch (JSONException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }*/
-        sellerList.put(1,System.getProperty("user.dir"));
-        return Response.status(200).entity(sellerList).build();
+        }
+        return Response.status(200).entity(sellers).build();
+    }
+    
+    @GET
+    @Path("/GetSellers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSellers(
+            @QueryParam("sellerid") String sellerid) {
+    
+        if(sList.containsKey(Integer.parseInt(sellerid))) {
+            return Response.status(200).entity(sList.get(Integer.parseInt(sellerid))).build();
+        }
+        
+        return Response.status(200).entity(null).build();
+        
     }
 
 }
