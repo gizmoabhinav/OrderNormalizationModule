@@ -11,7 +11,8 @@
 		<param>Version=1.0</param>
 		<param>Signature=^{HMACSHA256,Action=GetOrders&amp;CreatedAfter=${createdaftertimelazada}&amp;Format=json&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}</param>
 	</request>
-	<response>
+	<response type="JSON">
+		<orderidpattern>"OrderId": (.*?),</orderidpattern>
 	</response>
 </ordersapi>
 </marketplace>

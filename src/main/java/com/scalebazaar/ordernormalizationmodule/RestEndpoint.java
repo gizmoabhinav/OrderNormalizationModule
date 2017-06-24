@@ -47,7 +47,7 @@ public class RestEndpoint {
 
         Seller seller = sList.get(Integer.parseInt(sellerid));
         String marketplace = mList.get(Integer.parseInt(marketplaceid));
-        File marketplaceFile = new File("../../marketplaces/"+marketplace);
+        File marketplaceFile = new File("..\\..\\marketplaces\\"+marketplace);
         marketplace = marketplace.substring(0,marketplace.indexOf("."));
         for(String marketplace1 : seller.getMarketPlaces()) {
             if(marketplace1.equals(marketplace)) {
@@ -63,7 +63,7 @@ public class RestEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public Response loadSellers() {
         sList = new HashMap<Integer,Seller>();
-        File sellerDir = new File("../../sellers");
+        File sellerDir = new File("..\\..\\sellers");
         int sellerCount = sellerDir.listFiles().length;
         File[] sellerFiles = sellerDir.listFiles();
         Seller[] sellers = new Seller[sellerCount];

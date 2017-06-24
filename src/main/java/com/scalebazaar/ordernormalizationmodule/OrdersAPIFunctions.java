@@ -7,6 +7,7 @@ package com.scalebazaar.ordernormalizationmodule;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -27,7 +28,9 @@ import org.xml.sax.SAXException;
  * @author abmukh
  */
 public class OrdersAPIFunctions {
-    public static String getOrders(Seller seller, File marketplaceFile) {
+
+    public static ArrayList getOrders(Seller seller, File marketplaceFile) {
+        String OrdersResponse = null;
         JSONObject properties = null;
         try {
             properties = Utils.addSystemProperties(new JSONObject(seller.getProperties()));
@@ -43,7 +46,7 @@ public class OrdersAPIFunctions {
 
             //compute host
             String host = ((Element) requestnode).getElementsByTagName("host").item(0).getTextContent();
-            requestUrl.append(computeXmlVariables(host, new JSONObject(properties)));
+            requestUrl.append(computeXmlVariables(host, properties));
 
             // compute params
             NodeList paramsNodes = ((Element) requestnode).getElementsByTagName("param");
@@ -70,10 +73,19 @@ public class OrdersAPIFunctions {
             }
 
             if (((Element) requestnode).getAttribute("type").equals("GET")) {
-                return HttpConnector.sendGetRequest(requestUrl.toString(), headers);
+                OrdersResponse = HttpConnector.sendGetRequest(requestUrl.toString(), headers);
             } else if (((Element) requestnode).getAttribute("type").equals("POST")) {
-                return HttpConnector.sendPostRequest(requestUrl.toString(), headers);
+                OrdersResponse = HttpConnector.sendPostRequest(requestUrl.toString(), headers);
             }
+
+            Node responsenode = ((Element) ordersAPI).getElementsByTagName("response").item(0);
+
+            //extract orderids
+            ArrayList<String> al = extractOrderProps(OrdersResponse, ((Element) responsenode).getElementsByTagName("orderidpattern").item(0).getTextContent());
+            for (String orderid : al) {
+                System.out.println(orderid);
+            }
+            return al;
 
         } catch (SAXException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -120,5 +132,15 @@ public class OrdersAPIFunctions {
         m.appendTail(sb);
         input = sb.toString();
         return input;
+    }
+
+    private static ArrayList<String> extractOrderProps(String data, String patternstr) {
+        ArrayList<String> orderprop = new ArrayList<String>();
+        Pattern pattern = Pattern.compile(patternstr);
+        Matcher matcher = pattern.matcher(data);
+        while (matcher.find()) {
+            orderprop.add(matcher.group(1));
+        }
+        return orderprop;
     }
 }
