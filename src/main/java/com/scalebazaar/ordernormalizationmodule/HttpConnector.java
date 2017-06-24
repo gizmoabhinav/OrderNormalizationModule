@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.scalebazaar.ordernomarlizationmodule;
+package com.scalebazaar.ordernormalizationmodule;
 
 import java.io.BufferedReader;
 
@@ -38,7 +38,7 @@ public class HttpConnector {
             Iterator<String> keys = headers.keys();
 
             while (keys.hasNext()) {
-                String key = (String) keys.next();
+                String key = (String) keys.next(); 
                 if (headers.get(key) instanceof String) {
                    getRequest.addHeader(key, headers.get(key).toString());
                 }
