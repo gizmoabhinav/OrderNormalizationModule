@@ -15,7 +15,36 @@
 		<param>Signature=^{HMACSHA256BASE64,POST&#xA;mws.amazonservices.com&#xA;/Orders/2013-09-01&#xA;AWSAccessKeyId=${awsaccesskeyidamazon}&amp;Action=ListOrders&amp;CreatedAfter=${createdaftertimeamazon}&amp;MarketplaceId.Id.1=${marketplaceidamazoncom}&amp;SellerId=${selleridamazon}&amp;SignatureMethod=HmacSHA256&amp;SignatureVersion=2&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;Version=2013-09-01,${secretkeyamazon}}</param>
 	</request>
 	<response type="XML">
+		<orderidentifierpattern>&lt;Order&gt;(.*?)&lt;/Order&gt;</orderidentifierpattern>
 		<orderidpattern>&lt;AmazonOrderId&gt;(.*?)&lt;/AmazonOrderId&gt;</orderidpattern>
+		<timestamppattern>&lt;PurchaseDate&gt;(.*?)&lt;/PurchaseDate&gt;</timestamppattern>
+		<paymentmethodpattern>&lt;PaymentMethodDetail&gt;(.*?)&lt;/PaymentMethodDetail&gt;</paymentmethodpattern>
+		<orderstatuspattern>&lt;OrderStatus&gt;(.*?)&lt;/OrderStatus&gt;</orderstatuspattern>
+		<customernamepattern>&lt;BuyerName&gt;(.*?)&lt;/BuyerName&gt;</customernamepattern>
+		<customeremailpattern>&lt;BuyerEmail&gt;(.*?)&lt;/BuyerEmail&gt;</customeremailpattern>
+		<customeraddresspattern>&lt;ShippingAddress&gt;(.*?)&lt;/ShippingAddress&gt;</customeraddresspattern>
 	</response>
 </ordersapi>
+<orderbyidapi>
+	<request type="POST">
+		<host>https://mws.amazonservices.com/Orders/2013-09-01?</host>
+		<param>AWSAccessKeyId=${awsaccesskeyidamazon}</param>
+		<param>Action=ListOrderItems</param>
+		<param>AmazonOrderId=${orderid}</param>
+		<param>SellerId=${selleridamazon}</param>
+		<param>SignatureMethod=HmacSHA256</param>
+		<param>SignatureVersion=2</param>
+		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
+		<param>Version=2013-09-01</param>
+		<param>Signature=^{HMACSHA256BASE64,POST&#xA;mws.amazonservices.com&#xA;/Orders/2013-09-01&#xA;AWSAccessKeyId=${awsaccesskeyidamazon}&amp;Action=ListOrderItems&amp;AmazonOrderId=${orderid}&amp;SellerId=${selleridamazon}&amp;SignatureMethod=HmacSHA256&amp;SignatureVersion=2&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;Version=2013-09-01,${secretkeyamazon}}</param>
+	</request>
+	<response type="XML">
+		<orderitemidentifierpattern>&lt;OrderItem&gt;(.*?)&lt;/OrderItem&gt;</orderitemidentifierpattern>
+		<skupattern>&lt;SellerSKU&gt;(.*?)&lt;/SellerSKU&gt;</skupattern>
+		<valuepattern>&lt;ItemPrice&gt;.*&lt;Amount&gt;(.*?)&lt;/Amount&gt;        &lt;/ItemPrice&gt;</valuepattern>
+		<currencycodepattern>&lt;ItemPrice&gt;          &lt;CurrencyCode&gt;(.*?)&lt;/CurrencyCode&gt;</currencycodepattern>
+		<quantitypattern>&lt;QuantityOrdered&gt;(.*?)&lt;/QuantityOrdered&gt;</quantitypattern>
+		<itemnamepattern>&lt;Title&gt;(.*?)&lt;/Title&gt;</itemnamepattern>
+	</response>
+</orderbyidapi>
 </marketplace>

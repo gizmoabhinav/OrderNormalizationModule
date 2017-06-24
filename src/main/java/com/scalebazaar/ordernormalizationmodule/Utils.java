@@ -51,6 +51,7 @@ public class Utils {
     }
 
     public static String HMACSHA256encodeBase64(String key, String data) throws Exception {
+        System.out.println(data);
         Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(new SecretKeySpec(key.getBytes("UTF-8"),"HmacSHA256"));
         byte[] signature = mac.doFinal(data.getBytes("UTF-8"));

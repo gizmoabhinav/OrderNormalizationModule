@@ -11,8 +11,8 @@ package com.scalebazaar.ordernormalizationmodule;
  */
 public class Order {
     int id;
-    long timestamp;
-    String orderid,sellerid,marketplaceid,sku,value,quantity,paymentmethod,orderstatus,itemstatus,customername,customeremail,customerphone,customeraddress,currencycode,orderdump;
+    String timestamp;
+    String orderid,sellerid,marketplaceid,paymentmethod,orderstatus,customername,customeremail,customerphone,customeraddress,orderdump;
 
     public String getSellerid() {
         return sellerid;
@@ -30,11 +30,11 @@ public class Order {
         this.id = id;
     }
 
-    public long getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -54,30 +54,6 @@ public class Order {
         this.marketplaceid = marketplaceid;
     }
 
-    public String getSku() {
-        return sku;
-    }
-
-    public void setSku(String sku) {
-        this.sku = sku;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
-    }
-
     public String getPaymentmethod() {
         return paymentmethod;
     }
@@ -92,14 +68,6 @@ public class Order {
 
     public void setOrderstatus(String orderstatus) {
         this.orderstatus = orderstatus;
-    }
-
-    public String getItemstatus() {
-        return itemstatus;
-    }
-
-    public void setItemstatus(String itemstatus) {
-        this.itemstatus = itemstatus;
     }
 
     public String getCustomername() {
@@ -132,14 +100,6 @@ public class Order {
 
     public void setCustomeraddress(String customeraddress) {
         this.customeraddress = customeraddress;
-    }
-
-    public String getCurrencycode() {
-        return currencycode;
-    }
-
-    public void setCurrencycode(String currencycode) {
-        this.currencycode = currencycode;
     }
 
     public String getOrderdump() {

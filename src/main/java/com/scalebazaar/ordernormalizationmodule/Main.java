@@ -234,6 +234,10 @@ public class Main {
             }
         }
     }
+    
+    private static void getOrdersById() {
+        
+    }
 
     private static String computeXmlVariables(String input, JSONObject properties) throws JSONException, Exception {
         StringBuffer sb = new StringBuffer();
