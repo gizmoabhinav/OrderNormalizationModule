@@ -30,7 +30,7 @@ import org.json.JSONObject;
  */
 public class HttpConnector {
 
-    public static void sendGetRequest(String requestUrl, JSONObject headers) {
+    public static String sendGetRequest(String requestUrl, JSONObject headers) {
         try {
 
             DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -57,11 +57,15 @@ public class HttpConnector {
 
             String output;
             System.out.println("Output from Server .... \n");
+            StringBuilder ServerOutput = new StringBuilder();
             while ((output = br.readLine()) != null) {
                 System.out.println(output);
+                ServerOutput.append(output);
             }
 
             httpClient.getConnectionManager().shutdown();
+            
+            return ServerOutput.toString();
 
         } catch (ClientProtocolException e) {
 
@@ -73,9 +77,10 @@ public class HttpConnector {
         } catch (JSONException ex) {
             Logger.getLogger(HttpConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return "no result";
     }
     
-    public static void sendPostRequest(String requestUrl, JSONObject headers) {
+    public static String sendPostRequest(String requestUrl, JSONObject headers) {
         try {
 
             DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -102,11 +107,15 @@ public class HttpConnector {
 
             String output;
             System.out.println("Output from Server .... \n");
+            StringBuilder ServerOutput = new StringBuilder();
             while ((output = br.readLine()) != null) {
                 System.out.println(output);
+                ServerOutput.append(output);
             }
 
             httpClient.getConnectionManager().shutdown();
+            
+            return ServerOutput.toString();
 
         } catch (ClientProtocolException e) {
 
@@ -118,5 +127,6 @@ public class HttpConnector {
         } catch (JSONException ex) {
             Logger.getLogger(HttpConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return "no result";
     }
 }

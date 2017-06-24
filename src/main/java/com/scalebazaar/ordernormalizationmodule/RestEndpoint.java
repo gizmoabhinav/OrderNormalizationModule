@@ -35,19 +35,26 @@ import org.xml.sax.SAXException;
 public class RestEndpoint {
 
     public static HashMap<Integer,Seller> sList = new HashMap<Integer,Seller>();
+    public static HashMap<Integer,String> mList = new HashMap<Integer,String>();
     
     @GET
     @Path("/GetOrders")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMsg(
+    public Response getOrders(
             @QueryParam("sellerid") String sellerid,
             @QueryParam("marketplaceid") String marketplaceid,
             @QueryParam("lasttimestamp") String lasttiemstamp) {
 
-        Order order = new Order();
-        order.setSellerid(sellerid);
-        order.setMarketplaceid(marketplaceid);
-        return Response.status(200).entity(order).build();
+        Seller seller = sList.get(Integer.parseInt(sellerid));
+        String marketplace = mList.get(Integer.parseInt(marketplaceid));
+        File marketplaceFile = new File("../../marketplaces/"+marketplace);
+        marketplace = marketplace.substring(0,marketplace.indexOf("."));
+        for(String marketplace1 : seller.getMarketPlaces()) {
+            if(marketplace1.equals(marketplace)) {
+                return Response.status(200).entity(OrdersAPIFunctions.getOrders(seller,marketplaceFile)).build();
+            }
+        }
+        return Response.status(200).entity("Seller not applicable for marketplace").build();
 
     }
 
@@ -55,6 +62,7 @@ public class RestEndpoint {
     @Path("/LoadSellers")
     @Produces(MediaType.APPLICATION_JSON)
     public Response loadSellers() {
+        sList = new HashMap<Integer,Seller>();
         File sellerDir = new File("../../sellers");
         int sellerCount = sellerDir.listFiles().length;
         File[] sellerFiles = sellerDir.listFiles();
@@ -114,5 +122,34 @@ public class RestEndpoint {
         return Response.status(200).entity(null).build();
         
     }
+    
+    @GET
+    @Path("/LoadMarketplaces")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response loadMarketplaces() {
+        mList = new HashMap<Integer,String>();
+        File marketplaceDir = new File("../../marketplaces");
+        File[] marketplaceFiles = marketplaceDir.listFiles();        
+        int marketplaceCount = marketplaceDir.listFiles().length;
+        for (int i = 0; i < marketplaceCount; i++) {
+            try {
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.parse(marketplaceFiles[i]);
+                //Todo : check formatting of the xml file and validate
 
+                doc.getDocumentElement().normalize();
+                
+                mList.put(Integer.parseInt(((Element) (doc.getElementsByTagName("marketplace").item(0))).getAttribute("id")), marketplaceFiles[i].getName());
+                
+            } catch (SAXException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(RestEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParserConfigurationException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            } 
+        }
+        return Response.status(200).entity(mList).build();
+    }
 }
