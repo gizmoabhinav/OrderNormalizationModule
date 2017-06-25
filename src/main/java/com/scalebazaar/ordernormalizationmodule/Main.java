@@ -210,7 +210,7 @@ public class Main {
                 if (((Element) requestnode).getAttribute("type").equals("GET")) {
                     listOrdersResponse = HttpConnector.sendGetRequest(requestUrl.toString(), headers);
                 } else if (((Element) requestnode).getAttribute("type").equals("POST")) {
-                    listOrdersResponse = HttpConnector.sendPostRequest(requestUrl.toString(), headers);
+                    listOrdersResponse = HttpConnector.sendPostRequest(requestUrl.toString(), headers, "");
                 }
 
                 Node responsenode = ((Element) ordersAPI).getElementsByTagName("response").item(0);

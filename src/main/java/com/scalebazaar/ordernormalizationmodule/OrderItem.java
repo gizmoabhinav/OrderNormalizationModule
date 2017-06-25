@@ -11,7 +11,15 @@ package com.scalebazaar.ordernormalizationmodule;
  */
 public class OrderItem {
     int id;
-    String itemname,orderid,sellerid,marketplaceid,sku,value,quantity,itemstatus,currencycode,orderdump;
+    String itemname,itemid,orderid,sellerid,marketplaceid,sku,value,quantity,itemstatus,currencycode,orderdump;
+
+    public String getItemid() {
+        return itemid;
+    }
+
+    public void setItemid(String itemid) {
+        this.itemid = itemid;
+    }
 
     public String getItemname() {
         return itemname;

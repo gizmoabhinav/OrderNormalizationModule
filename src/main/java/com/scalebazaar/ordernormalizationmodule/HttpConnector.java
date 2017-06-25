@@ -19,8 +19,10 @@ import java.sql.DriverManager;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.ByteArrayEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,13 +82,14 @@ public class HttpConnector {
         return "no result";
     }
     
-    public static String sendPostRequest(String requestUrl, JSONObject headers) {
+    public static String sendPostRequest(String requestUrl, JSONObject headers, String body) {
         try {
 
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpPost getRequest = new HttpPost(requestUrl);
             Iterator<String> keys = headers.keys();
 
+            System.out.println("url = "+requestUrl);
             while (keys.hasNext()) {
                 String key = (String) keys.next();
                 if (headers.get(key) instanceof String) {
@@ -95,6 +98,14 @@ public class HttpConnector {
             }
             System.out.println(headers.toString());
 
+            if(!body.isEmpty()) {
+                getRequest.addHeader("Content-Type","text/xml");
+                HttpEntity entity = new ByteArrayEntity(body.getBytes("UTF-8"));
+                getRequest.setEntity(entity);
+            }
+            
+            System.out.println("body = "+body);
+            
             HttpResponse response = httpClient.execute(getRequest);
 
             if (response.getStatusLine().getStatusCode() != 200) {
