@@ -266,7 +266,7 @@ public class OrdersAPIFunctions {
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "Done";
+        return OrdersResponse;
     }
     
     private static String computeXmlVariables(String input, JSONObject properties) throws JSONException, Exception {

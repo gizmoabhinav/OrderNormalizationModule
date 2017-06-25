@@ -9,7 +9,7 @@
 		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
 		<param>UserID=${useridlazada}</param>
 		<param>Version=1.0</param>
-		<param>Signature=^{HMACSHA256,Action=GetOrders&amp;CreatedAfter=${createdaftertimelazada}&amp;Format=xml&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}</param>
+		<param>Signature=^{HMACSHA256,Action=GetOrders&amp;CreatedAfter=${createdaftertimelazada}&amp;Format=xml&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}^</param>
 	</request>
 	<response type="XML">
 		<orderidentifierpattern>&lt;Order&gt;(.*?)&lt;/Order&gt;</orderidentifierpattern>
@@ -31,10 +31,11 @@
 		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
 		<param>UserID=${useridlazada}</param>
 		<param>Version=1.0</param>
-		<param>Signature=^{HMACSHA256,Action=GetOrderItems&amp;Format=xml&amp;OrderId=${orderid}&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}</param>
+		<param>Signature=^{HMACSHA256,Action=GetOrderItems&amp;Format=xml&amp;OrderId=${orderid}&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}^</param>
 	</request>
 	<response type="XML">
 		<orderitemidentifierpattern>&lt;OrderItem&gt;(.*?)&lt;/OrderItem&gt;</orderitemidentifierpattern>
+		<idpattern>&lt;OrderItemId&gt;(.*?)&lt;/OrderItemId&gt;</idpattern>
 		<skupattern>&lt;Sku&gt;(.*?)&lt;/Sku&gt;</skupattern>
 		<valuepattern>&lt;ItemPrice&gt;(.*?)&lt;/ItemPrice&gt;</valuepattern>
 		<currencycodepattern>&lt;Currency&gt;(.*?)&lt;/Currency&gt;</currencycodepattern>
@@ -42,4 +43,21 @@
 		<itemnamepattern>&lt;Name&gt;(.*?)&lt;/Name&gt;</itemnamepattern>
 	</response>
 </orderbyidapi>
+<shippingupdateapi>
+	<request type="GET">
+		<host>https://api.sellercenter.lazada.com.my?</host>
+		<param>Action=SetStatusToPackedByMarketplace</param>
+		<param>DeliveryType=dropship</param>
+		<param>Format=xml</param>
+		<param>OrderItemIds=%5B${orderitemid}%5D</param>
+		<param>ShippingProvider=${carriername}</param>
+		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
+		<param>UserID=${useridlazada}</param>
+		<param>Version=1.0</param>
+		<param>Signature=^{HMACSHA256,Action=SetStatusToPackedByMarketplace&amp;DeliveryType=dropship&amp;Format=xml&amp;OrderItemIds=%5B${orderitemid}%5D&amp;ShippingProvider=${carriername}&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}^</param>
+		
+	</request>
+	<response type="XML">
+	</response>
+</shippingupdateapi>
 </marketplace>
