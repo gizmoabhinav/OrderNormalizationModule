@@ -1,0 +1,17 @@
+<marketplace id="1">
+<name>Lazada</name>
+<ordersapi>
+	<request type="GET">
+		<host>https://api.sellercenter.lazada.com.my?</host>
+		<param>Action=GetOrders</param>
+		<param>CreatedAfter=${createdaftertimelazada}</param>
+		<param>Format=json</param>
+		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
+		<param>UserID=${useridlazada}</param>
+		<param>Version=1.0</param>
+		<param>Signature=^{HMACSHA256,Action=GetOrders&amp;CreatedAfter=${createdaftertimelazada}&amp;Format=json&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;UserID=${useridlazada}&amp;Version=1.0,${apikeylazada}}</param>
+	</request>
+	<response>
+	</response>
+</ordersapi>
+</marketplace>

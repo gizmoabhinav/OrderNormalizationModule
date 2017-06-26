@@ -1,0 +1,11 @@
+<marketplace id="2">
+<name>11Street</name>
+<ordersapi>
+	<request type="GET">
+		<host>http://api.11street.my/rest/ordservices/complete/${createdaftertime11street}/${currenttimestampDDMMYYYYHHMM}</host>
+		<header name="openapikey">${openapikey11street}</header>
+	</request>
+	<response>
+	</response>
+</ordersapi>
+</marketplace>

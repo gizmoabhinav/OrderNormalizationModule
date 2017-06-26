@@ -1,0 +1,20 @@
+<marketplace id="3">
+<name>Amazon.com</name>
+<ordersapi>
+	<request type="POST">
+		<host>https://mws.amazonservices.com/Orders/2013-09-01?</host>
+		<param>AWSAccessKeyId=${awsaccesskeyidamazon}</param>
+		<param>Action=ListOrders</param>
+		<param>CreatedAfter=${createdaftertimeamazon}</param>
+		<param>MarketplaceId.Id.1=${marketplaceidamazoncom}</param>
+		<param>SellerId=${selleridamazon}</param>
+		<param>SignatureMethod=HmacSHA256</param>
+		<param>SignatureVersion=2</param>
+		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
+		<param>Version=2013-09-01</param>
+		<param>Signature=^{HMACSHA256BASE64,POST&#xA;mws.amazonservices.com&#xA;/Orders/2013-09-01&#xA;AWSAccessKeyId=${awsaccesskeyidamazon}&amp;Action=ListOrders&amp;CreatedAfter=${createdaftertimeamazon}&amp;MarketplaceId.Id.1=${marketplaceidamazoncom}&amp;SellerId=${selleridamazon}&amp;SignatureMethod=HmacSHA256&amp;SignatureVersion=2&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;Version=2013-09-01,${secretkeyamazon}}</param>
+	</request>
+	<response>
+	</response>
+</ordersapi>
+</marketplace>
