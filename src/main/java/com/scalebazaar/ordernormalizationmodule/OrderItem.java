@@ -10,7 +10,6 @@ package com.scalebazaar.ordernormalizationmodule;
  * @author abmukh
  */
 public class OrderItem {
-    int id;
     String itemname,itemid,orderid,sellerid,marketplaceid,sku,value,quantity,itemstatus,currencycode,orderdump;
 
     public String getItemid() {
@@ -35,14 +34,6 @@ public class OrderItem {
 
     public void setSellerid(String sellerid) {
         this.sellerid = sellerid;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getOrderid() {
