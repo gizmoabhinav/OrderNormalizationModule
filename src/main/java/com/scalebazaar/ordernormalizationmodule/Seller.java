@@ -10,6 +10,7 @@ import org.json.JSONObject;
  *
  * @author abmukh
  */
+@SuppressWarnings("unused")
 public class Seller {
     private int id;
     private String name;
