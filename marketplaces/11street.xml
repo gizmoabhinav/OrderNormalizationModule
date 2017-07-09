@@ -2,11 +2,10 @@
 <name>11Street</name>
 <ordersapi>
 	<request type="GET">
-		<host>http://api.11street.my/rest/ordservices/complete/${createdaftertime11street1}/${currenttimestampDDMMYYYYHHMM}</host>
+		<host>http://api.11street.my/rest/ordservices/complete/${createdaftertime11street}/${currenttimestampDDMMYYYYHHMM}</host>
 		<header name="openapikey">${openapikey11street}</header>
 	</request>
-	<response type="XML">
-		<orderidpattern>placeholder</orderidpattern>
+	<response>
 	</response>
 </ordersapi>
 </marketplace>
