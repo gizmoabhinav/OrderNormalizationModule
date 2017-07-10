@@ -10,7 +10,14 @@ import org.apache.commons.io.IOUtils;
 import net.sf.json.JSONSerializer;
 
 import org.json.JSONObject;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 
@@ -70,6 +77,17 @@ public class Utils {
     }
     public boolean checkForChange(JSONObject jo){
     	return false;
+    }
+    public JsonObject toJson(Map<String , String> map){
+    	String s = new String("{");
+		for (Map.Entry<String, String> entry : map.entrySet()){
+			s = s + "\"" + entry.getKey() + "\"" + ":" + "\"" + entry.getValue() + "\"" + ",";
+		}
+    	s = s.substring(0, s.length()-1);
+    	s = s + "}";
+    	JsonElement je = new JsonParser().parse(s.toString());
+    	JsonObject jo = je.getAsJsonObject();
+    	return jo;
     }
 
 }

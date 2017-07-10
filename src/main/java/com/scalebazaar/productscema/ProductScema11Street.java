@@ -62,4 +62,7 @@ public class ProductScema11Street {
 		}
 		return return_map;
 	}
+	public Map<String , String> getMap(){
+		return this.map;
+	}
 }

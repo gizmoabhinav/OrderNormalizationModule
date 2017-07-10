@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.scalebazaar.productscema.CreateJsonScema;
 import com.scalebazaar.productscema.ProductScema11Street;
 import com.scalebazaar.productscema.ProductScemaAmazon;
+import com.scalebazaar.productscema.ProductScemaEbay;
 import com.scalebazaar.productscema.ProductScemaLazada;
 import com.scalebazaar.productscema.ProductScemaScalelabs;
+import com.scalebazaar.productscema.RuleGeneration;
 
 public class CovertToDifferentClients {
 	public Object covertToLazada(ProductScemaScalelabs pssl){
-		CreateJsonScema cjs = new CreateJsonScema();
+		RuleGeneration cjs = new RuleGeneration();
 		ProductScemaLazada psl = new ProductScemaLazada();
 		Map<String , String> mapScalelabs = new HashMap<>();
 		mapScalelabs = pssl.getElements();
@@ -25,7 +26,7 @@ public class CovertToDifferentClients {
 		return psl;
 	}
 	public Object covertTo11Street(ProductScemaScalelabs pssl){
-		CreateJsonScema cjs = new CreateJsonScema();
+		RuleGeneration cjs = new RuleGeneration();
 		ProductScema11Street pss = new ProductScema11Street();
 		Map<String , String> mapScalelabs = new HashMap<>();
 		mapScalelabs = pssl.getElements();
@@ -37,34 +38,35 @@ public class CovertToDifferentClients {
 		}
 		return pss;
 	}
+	// NEED TO CHANGE
 	public Object covertToBonza(ProductScemaScalelabs pssl){
-		CreateJsonScema cjs = new CreateJsonScema();
-		ProductScemaLazada psl = new ProductScemaLazada();
+		RuleGeneration cjs = new RuleGeneration();
+		ProductScemaLazada psb = new ProductScemaLazada();
 		Map<String , String> mapScalelabs = new HashMap<>();
 		mapScalelabs = pssl.getElements();
 		Map<String ,String> mapMapping = new HashMap<>();
 		mapMapping = cjs.bonza();
 		for (Map.Entry<String, String> entry : mapMapping.entrySet()){
 			String valueToAdd = mapScalelabs.get(entry.getKey());
-			psl.set(entry.getValue(), valueToAdd);
+			psb.set(entry.getValue(), valueToAdd);
 		}
-		return psl;
+		return psb;
 	}
 	public Object covertToeBay(ProductScemaScalelabs pssl){
-		CreateJsonScema cjs = new CreateJsonScema();
-		ProductScemaLazada psl = new ProductScemaLazada();
+		RuleGeneration cjs = new RuleGeneration();
+		ProductScemaEbay pse = new ProductScemaEbay();
 		Map<String , String> mapScalelabs = new HashMap<>();
 		mapScalelabs = pssl.getElements();
 		Map<String ,String> mapMapping = new HashMap<>();
 		mapMapping = cjs.ebay();
 		for (Map.Entry<String, String> entry : mapMapping.entrySet()){
 			String valueToAdd = mapScalelabs.get(entry.getKey());
-			psl.set(entry.getValue(), valueToAdd);
+			pse.set(entry.getValue(), valueToAdd);
 		}
-		return psl;
+		return pse;
 	}
 	public Object covertToAmazon(ProductScemaScalelabs pssl){
-		CreateJsonScema cjs = new CreateJsonScema();
+		RuleGeneration cjs = new RuleGeneration();
 		ProductScemaAmazon psa = new ProductScemaAmazon();
 		Map<String , String> mapScalelabs = new HashMap<>();
 		mapScalelabs = pssl.getElements();

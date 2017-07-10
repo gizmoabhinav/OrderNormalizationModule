@@ -9,7 +9,7 @@ public class ProductScemaEbay {
 	ShippingService ShippingService_1 = new ShippingService(); 
 	ShippingService ShippingService_2 = new ShippingService();
 	
-	ProductScemaEbay(){
+	public ProductScemaEbay(){
 		this.map.put("Category" , " ");					//required
 		this.map.put("Title" , " ");						//required
 		this.map.put("Subtitle" , " ");
