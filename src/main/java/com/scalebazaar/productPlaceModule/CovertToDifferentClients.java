@@ -78,14 +78,24 @@ public class CovertToDifferentClients {
 		}
 		return psa;
 	}
+	
+	
 	public Object covertToScalelabs(ArrayList<String[]> row){
-		System.out.println("hdljd;k'l"+ row.get(0).length);
-		for(int  i =0 ; i < row.get(0).length ; i++){
-			System.out.println(row.get(0)[i]);
-		}
-		System.out.println(row.size());
-		return row;
 		
+		ProductScemaScalelabs pss = new ProductScemaScalelabs();
+		Map<String , String > pssmap = new HashMap<>();
+		pssmap = pss.getMap();
+		int i =0;
+		int j =0;
+		for (Map.Entry<String, String> entry : pssmap.entrySet()) {
+			for(i = j ; i < row.size() ; ){
+				pss.set(entry.getKey(), row.get(i).toString());
+				j = i+1;
+				break;
+			}
+		}
+		
+		return pss;
 		
 	}
 
