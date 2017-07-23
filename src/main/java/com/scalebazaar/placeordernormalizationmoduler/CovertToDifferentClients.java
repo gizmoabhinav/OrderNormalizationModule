@@ -1,45 +1,101 @@
-package com.scalebazaar.placeordernormalizationmoduler;
+package com.scalebazaar.productPlaceModule;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.scalebazaar.productscema.ProductScema11Street;
+import com.scalebazaar.productscema.ProductScemaAmazon;
+import com.scalebazaar.productscema.ProductScemaEbay;
 import com.scalebazaar.productscema.ProductScemaLazada;
 import com.scalebazaar.productscema.ProductScemaScalelabs;
+import com.scalebazaar.productscema.RuleGeneration;
 
 public class CovertToDifferentClients {
 	public Object covertToLazada(ProductScemaScalelabs pssl){
+		RuleGeneration cjs = new RuleGeneration();
 		ProductScemaLazada psl = new ProductScemaLazada();
-		psl.setSellerSku(pssl.getItemSKU());
-		psl.setName(pssl.getProductName());
-		//psl.setAssociatedSku(pssl.getItemVariantSKU());
-		psl.setBarcode_ean(pssl.getBarcode());
-		psl.setPrimaryCategory(pssl.getProductCategory());
-		
+		Map<String , String> mapScalelabs = new HashMap<>();
+		mapScalelabs = pssl.getElements();
+		Map<String ,String> mapMapping = new HashMap<>();
+		mapMapping = cjs.lazada();
+		for (Map.Entry<String, String> entry : mapMapping.entrySet()){
+			String valueToAdd = mapScalelabs.get(entry.getKey());
+			psl.set(entry.getValue(), valueToAdd);
+		}
 		return psl;
-		
 	}
 	public Object covertTo11Street(ProductScemaScalelabs pssl){
-		return pssl;
-		
+		RuleGeneration cjs = new RuleGeneration();
+		ProductScema11Street pss = new ProductScema11Street();
+		Map<String , String> mapScalelabs = new HashMap<>();
+		mapScalelabs = pssl.getElements();
+		Map<String ,String> mapMapping = new HashMap<>();
+		mapMapping = cjs.street_11();
+		for (Map.Entry<String, String> entry : mapMapping.entrySet()){
+			String valueToAdd = mapScalelabs.get(entry.getKey());
+			pss.set(entry.getValue(), valueToAdd);
+		}
+		return pss;
 	}
+	// NEED TO CHANGE
 	public Object covertToBonza(ProductScemaScalelabs pssl){
-		return pssl;
-		
+		RuleGeneration cjs = new RuleGeneration();
+		ProductScemaLazada psb = new ProductScemaLazada();
+		Map<String , String> mapScalelabs = new HashMap<>();
+		mapScalelabs = pssl.getElements();
+		Map<String ,String> mapMapping = new HashMap<>();
+		mapMapping = cjs.bonza();
+		for (Map.Entry<String, String> entry : mapMapping.entrySet()){
+			String valueToAdd = mapScalelabs.get(entry.getKey());
+			psb.set(entry.getValue(), valueToAdd);
+		}
+		return psb;
 	}
 	public Object covertToeBay(ProductScemaScalelabs pssl){
-		return pssl;
-		
+		RuleGeneration cjs = new RuleGeneration();
+		ProductScemaEbay pse = new ProductScemaEbay();
+		Map<String , String> mapScalelabs = new HashMap<>();
+		mapScalelabs = pssl.getElements();
+		Map<String ,String> mapMapping = new HashMap<>();
+		mapMapping = cjs.ebay();
+		for (Map.Entry<String, String> entry : mapMapping.entrySet()){
+			String valueToAdd = mapScalelabs.get(entry.getKey());
+			pse.set(entry.getValue(), valueToAdd);
+		}
+		return pse;
 	}
 	public Object covertToAmazon(ProductScemaScalelabs pssl){
-		return pssl;
-		
-	}
-	public void covertToScalelabs(ArrayList<String[]> row){
-		System.out.println("hdljd;k'l"+ row.get(0).length);
-		for(int  i =0 ; i < row.get(0).length ; i++){
-			System.out.println(row.get(0)[i]);
+		RuleGeneration cjs = new RuleGeneration();
+		ProductScemaAmazon psa = new ProductScemaAmazon();
+		Map<String , String> mapScalelabs = new HashMap<>();
+		mapScalelabs = pssl.getElements();
+		Map<String ,String> mapMapping = new HashMap<>();
+		mapMapping = cjs.amazon();
+		for (Map.Entry<String, String> entry : mapMapping.entrySet()){
+			String valueToAdd = mapScalelabs.get(entry.getKey());
+			psa.set(entry.getValue(), valueToAdd);
 		}
-		System.out.println(row.size());
+		return psa;
+	}
+	
+	
+	public Object covertToScalelabs(ArrayList<String[]> row){
 		
+		ProductScemaScalelabs pss = new ProductScemaScalelabs();
+		Map<String , String > pssmap = new HashMap<>();
+		pssmap = pss.getMap();
+		int i =0;
+		int j =0;
+		for (Map.Entry<String, String> entry : pssmap.entrySet()) {
+			for(i = j ; i < row.size() ; ){
+				pss.set(entry.getKey(), row.get(i).toString());
+				j = i+1;
+				break;
+			}
+		}
+		
+		return pss;
 		
 	}
 

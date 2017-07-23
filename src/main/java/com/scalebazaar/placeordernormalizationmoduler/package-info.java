@@ -1,8 +1,8 @@
 /**
- * 
+ *  @author Sagar Gupta
  */
 /**
  * @author ADMINIBM
  *
  */
-package com.scalebazaar.placeordernormalizationmoduler;
+package com.scalebazaar.productscema;
