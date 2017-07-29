@@ -22,13 +22,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.scalebazaar.connection.HttpConnector;
-
 /**
  *
  * @author abmukh
  */
-
 import org.json.JSONArray;
 import org.json.JSONStringer;
 
@@ -38,19 +35,19 @@ import java.io.OutputStreamWriter;
 
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 
- 
 public class Main {
 
     public static void main(String args[]) {
         Seller[] sellers = loadSellers();
-        for(Seller seller : sellers) {
+        for (Seller seller : sellers) {
             getOrders(seller);
         }
     }
 
     public static Seller[] loadSellers() {
-        File sellerDir = new File("..\\..\\sellers");
+        File sellerDir = new File("sellers");
         int sellerCount = sellerDir.listFiles().length;
         File[] sellerFiles = sellerDir.listFiles();
         Seller[] sellers = new Seller[sellerCount];
@@ -93,6 +90,7 @@ public class Main {
         }
         return sellers;
     }
+
     public static void getOrder_Bonanza(String[] args) {
         try {
             String devId = "myDevId";
@@ -110,16 +108,16 @@ public class Main {
             OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
 
             String jsonPayload = new JSONStringer()
-                .object()
+                    .object()
                     .key("requesterCredentials")
                     .object()
-                        .key("bonanzleAuthToken")
-                        .value("myAuthToken")
+                    .key("bonanzleAuthToken")
+                    .value("myAuthToken")
                     .endObject()
                     .key("orderRole")
                     .value("seller")
-                .endObject()
-                .toString();
+                    .endObject()
+                    .toString();
 
             String requestName = "GetOrdersRequest";
 
@@ -134,7 +132,7 @@ public class Main {
 
             JSONObject jsonResponse = new JSONObject(response);
 
-            if (jsonResponse.optString("ack").equals("Success") 
+            if (jsonResponse.optString("ack").equals("Success")
                     && jsonResponse.optJSONObject("getOrdersResponse") != null) {
 
                 // Success! Now read more keys from the json object
@@ -157,8 +155,9 @@ public class Main {
             System.out.println(e);
         }
     }
-    
+
     public static void getOrders(Seller seller) {
+        String listOrdersResponse = null;
         JSONObject properties = null;
         try {
             properties = Utils.addSystemProperties(new JSONObject(seller.getProperties()));
@@ -168,7 +167,6 @@ public class Main {
         String marketplaces[] = seller.getMarketPlaces();
         for (int i = 0; i < marketplaces.length; i++) {
             File marketplaceFile = new File("marketplaces/" + marketplaces[i] + ".xml");
-
             //Todo: check for file sanity
             try {
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -183,7 +181,7 @@ public class Main {
 
                 //compute host
                 String host = ((Element) requestnode).getElementsByTagName("host").item(0).getTextContent();
-                requestUrl.append(computeXmlVariables(host,new JSONObject(properties)));
+                requestUrl.append(computeXmlVariables(host, properties));
 
                 // compute params
                 NodeList paramsNodes = ((Element) requestnode).getElementsByTagName("param");
@@ -192,7 +190,7 @@ public class Main {
                         requestUrl.append("&");
                     }
                     String param = paramsNodes.item(j).getTextContent();
-                    requestUrl.append(computeXmlVariables(param,properties));
+                    requestUrl.append(computeXmlVariables(param, properties));
                 }
 
                 System.out.println(requestUrl.toString());
@@ -206,14 +204,21 @@ public class Main {
                         requestUrl.append("&");
                     }
                     String headerValue = headerNodes.item(j).getTextContent();
-                    headers.put(((Element) headerNodes.item(j)).getAttribute("name"), computeXmlVariables(headerValue,properties));
+                    headers.put(((Element) headerNodes.item(j)).getAttribute("name"), computeXmlVariables(headerValue, properties));
                 }
 
-                
-                if(((Element) requestnode).getAttribute("type").equals("GET")) {
-                    HttpConnector.sendGetRequest(requestUrl.toString(), headers);
-                }else if (((Element) requestnode).getAttribute("type").equals("POST")) {
-                    HttpConnector.sendPostRequest(requestUrl.toString(), headers);
+                if (((Element) requestnode).getAttribute("type").equals("GET")) {
+                    listOrdersResponse = HttpConnector.sendGetRequest(requestUrl.toString(), headers);
+                } else if (((Element) requestnode).getAttribute("type").equals("POST")) {
+                    listOrdersResponse = HttpConnector.sendPostRequest(requestUrl.toString(), headers, "");
+                }
+
+                Node responsenode = ((Element) ordersAPI).getElementsByTagName("response").item(0);
+
+                //extract orderids
+                ArrayList<String> al = extractOrderProps(listOrdersResponse, ((Element) responsenode).getElementsByTagName("orderidpattern").item(0).getTextContent());
+                for (String orderid : al) {
+                    System.out.println(orderid);
                 }
 
             } catch (SAXException ex) {
@@ -228,6 +233,10 @@ public class Main {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    private static void getOrdersById() {
+        
     }
 
     private static String computeXmlVariables(String input, JSONObject properties) throws JSONException, Exception {
@@ -261,6 +270,16 @@ public class Main {
         m.appendTail(sb);
         input = sb.toString();
         return input;
+    }
+
+    private static ArrayList<String> extractOrderProps(String data, String patternstr) {
+        ArrayList<String> orderprop = new ArrayList<String>();
+        Pattern pattern = Pattern.compile(patternstr);
+        Matcher matcher = pattern.matcher(data);
+        while (matcher.find()) {
+            orderprop.add(matcher.group(1));
+        }
+        return orderprop;
     }
 
 }

@@ -9,6 +9,7 @@ package com.scalebazaar.ordernormalizationmodule;
  *
  * @author abmukh
  */
+import static com.scalebazaar.ordernormalizationmodule.OrdersAPIFunctions.setItemShipmentDetails;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,7 +32,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-@SuppressWarnings("unused")
 @Path("/OrdersAPI")
 public class RestEndpoint {
 
@@ -46,18 +46,43 @@ public class RestEndpoint {
             @QueryParam("marketplaceid") String marketplaceid,
             @QueryParam("lasttimestamp") String lasttiemstamp) {
 
+        if(!sList.containsKey(Integer.parseInt(sellerid)) || !mList.containsKey(Integer.parseInt(marketplaceid))) {
+            return Response.status(200).entity("invalid SellerId or MarketplaceId").build();
+        }
         Seller seller = sList.get(Integer.parseInt(sellerid));
         String marketplace = mList.get(Integer.parseInt(marketplaceid));
         File marketplaceFile = new File("../../marketplaces/"+marketplace);
         marketplace = marketplace.substring(0,marketplace.indexOf("."));
         for(String marketplace1 : seller.getMarketPlaces()) {
             if(marketplace1.equals(marketplace)) {
-                return Response.status(200).entity(OrdersAPIFunctions.getOrders(seller,marketplaceFile)).build();
+                return Response.status(200).entity(OrdersAPIFunctions.getOrders(seller,marketplaceFile,marketplaceid)).build();
             }
         }
         return Response.status(200).entity("Seller not applicable for marketplace").build();
-
     }
+    
+    @GET
+    @Path("/GetOrdersById")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getOrdersById(
+            @QueryParam("sellerid") String sellerid,
+            @QueryParam("marketplaceid") String marketplaceid,
+            @QueryParam("orderid") String orderid) {
+
+        if(!sList.containsKey(Integer.parseInt(sellerid)) || !mList.containsKey(Integer.parseInt(marketplaceid))) {
+            return Response.status(200).entity("invalid SellerId or MarketplaceId").build();
+        }
+        Seller seller = sList.get(Integer.parseInt(sellerid));
+        String marketplace = mList.get(Integer.parseInt(marketplaceid));
+        File marketplaceFile = new File("../../marketplaces/"+marketplace);
+        marketplace = marketplace.substring(0,marketplace.indexOf("."));
+        for(String marketplace1 : seller.getMarketPlaces()) {
+            if(marketplace1.equals(marketplace)) {
+                return Response.status(200).entity(OrdersAPIFunctions.getOrdersById(seller,marketplaceFile,orderid,marketplaceid)).build();
+            }
+        }
+        return Response.status(200).entity("Seller not applicable for marketplace").build();
+    }   
 
     @GET
     @Path("/LoadSellers")
@@ -153,4 +178,32 @@ public class RestEndpoint {
         }
         return Response.status(200).entity(mList).build();
     }
+
+    @GET
+    @Path("/BookShipment")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response bookShipment(
+            @QueryParam("sellerid") String sellerid,
+            @QueryParam("marketplaceid") String marketplaceid,
+            @QueryParam("orderid") String orderid,
+            @QueryParam("shippername") String shippername,
+            @QueryParam("trackingnumber") String trackingnumber,
+            @QueryParam("itemid") String itemid,
+            @QueryParam("quantity") int quantity) {
+        if(!sList.containsKey(Integer.parseInt(sellerid)) || !mList.containsKey(Integer.parseInt(marketplaceid))) {
+            return Response.status(200).entity("invalid SellerId or MarketplaceId").build();
+        }
+        Seller seller = sList.get(Integer.parseInt(sellerid));
+        String marketplace = mList.get(Integer.parseInt(marketplaceid));
+        File marketplaceFile = new File("../../marketplaces/"+marketplace);
+        marketplace = marketplace.substring(0,marketplace.indexOf("."));
+        for(String marketplace1 : seller.getMarketPlaces()) {
+            if(marketplace1.equals(marketplace)) {
+                return Response.status(200).entity(OrdersAPIFunctions.setItemShipmentDetails(seller,marketplaceFile,orderid,marketplaceid,shippername,trackingnumber,itemid,quantity)).build();
+            }
+        }
+        return Response.status(200).entity("Seller not applicable for marketplace").build();
+        
+    }
+
 }

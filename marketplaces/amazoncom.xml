@@ -12,9 +12,60 @@
 		<param>SignatureVersion=2</param>
 		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
 		<param>Version=2013-09-01</param>
-		<param>Signature=^{HMACSHA256BASE64,POST&#xA;mws.amazonservices.com&#xA;/Orders/2013-09-01&#xA;AWSAccessKeyId=${awsaccesskeyidamazon}&amp;Action=ListOrders&amp;CreatedAfter=${createdaftertimeamazon}&amp;MarketplaceId.Id.1=${marketplaceidamazoncom}&amp;SellerId=${selleridamazon}&amp;SignatureMethod=HmacSHA256&amp;SignatureVersion=2&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;Version=2013-09-01,${secretkeyamazon}}</param>
+		<param>Signature=^{HMACSHA256BASE64,POST&#xA;mws.amazonservices.com&#xA;/Orders/2013-09-01&#xA;AWSAccessKeyId=${awsaccesskeyidamazon}&amp;Action=ListOrders&amp;CreatedAfter=${createdaftertimeamazon}&amp;MarketplaceId.Id.1=${marketplaceidamazoncom}&amp;SellerId=${selleridamazon}&amp;SignatureMethod=HmacSHA256&amp;SignatureVersion=2&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;Version=2013-09-01,${secretkeyamazon}}^</param>
 	</request>
-	<response>
+	<response type="XML">
+		<orderidentifierpattern>&lt;Order&gt;(.*?)&lt;/Order&gt;</orderidentifierpattern>
+		<orderidpattern>&lt;AmazonOrderId&gt;(.*?)&lt;/AmazonOrderId&gt;</orderidpattern>
+		<timestamppattern>&lt;PurchaseDate&gt;(.*?)&lt;/PurchaseDate&gt;</timestamppattern>
+		<paymentmethodpattern>&lt;PaymentMethodDetail&gt;(.*?)&lt;/PaymentMethodDetail&gt;</paymentmethodpattern>
+		<orderstatuspattern>&lt;OrderStatus&gt;(.*?)&lt;/OrderStatus&gt;</orderstatuspattern>
+		<customernamepattern>&lt;BuyerName&gt;(.*?)&lt;/BuyerName&gt;</customernamepattern>
+		<customeremailpattern>&lt;BuyerEmail&gt;(.*?)&lt;/BuyerEmail&gt;</customeremailpattern>
+		<customeraddresspattern>&lt;ShippingAddress&gt;(.*?)&lt;/ShippingAddress&gt;</customeraddresspattern>
 	</response>
 </ordersapi>
+<orderbyidapi>
+	<request type="POST">
+		<host>https://mws.amazonservices.com/Orders/2013-09-01?</host>
+		<param>AWSAccessKeyId=${awsaccesskeyidamazon}</param>
+		<param>Action=ListOrderItems</param>
+		<param>AmazonOrderId=${orderid}</param>
+		<param>SellerId=${selleridamazon}</param>
+		<param>SignatureMethod=HmacSHA256</param>
+		<param>SignatureVersion=2</param>
+		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
+		<param>Version=2013-09-01</param>
+		<param>Signature=^{HMACSHA256BASE64,POST&#xA;mws.amazonservices.com&#xA;/Orders/2013-09-01&#xA;AWSAccessKeyId=${awsaccesskeyidamazon}&amp;Action=ListOrderItems&amp;AmazonOrderId=${orderid}&amp;SellerId=${selleridamazon}&amp;SignatureMethod=HmacSHA256&amp;SignatureVersion=2&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;Version=2013-09-01,${secretkeyamazon}}^</param>
+	</request>
+	<response type="XML">
+		<orderitemidentifierpattern>&lt;OrderItem&gt;(.*?)&lt;/OrderItem&gt;</orderitemidentifierpattern>
+		<idpattern>&lt;OrderItemId&gt;(.*?)&lt;/OrderItemId&gt;</idpattern>
+		<skupattern>&lt;SellerSKU&gt;(.*?)&lt;/SellerSKU&gt;</skupattern>
+		<valuepattern>&lt;ItemPrice&gt;.*&lt;Amount&gt;(.*?)&lt;/Amount&gt;        &lt;/ItemPrice&gt;</valuepattern>
+		<currencycodepattern>&lt;ItemPrice&gt;          &lt;CurrencyCode&gt;(.*?)&lt;/CurrencyCode&gt;</currencycodepattern>
+		<quantitypattern>&lt;QuantityOrdered&gt;(.*?)&lt;/QuantityOrdered&gt;</quantitypattern>
+		<itemnamepattern>&lt;Title&gt;(.*?)&lt;/Title&gt;</itemnamepattern>
+	</response>
+</orderbyidapi>
+<shippingupdateapi>
+	<request type="POST">
+		<host>https://mws.amazonservices.com?</host>
+		<param>AWSAccessKeyId=${awsaccesskeyidamazon}</param>
+		<param>Action=SubmitFeed</param>
+		<param>ContentMD5Value=^{MD5BASE64,&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;AmazonEnvelope xsi:noNamespaceSchemaLocation="amzn-envelope.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;&lt;Header&gt;&lt;DocumentVersion&gt;1.01&lt;/DocumentVersion&gt;&lt;MerchantIdentifier&gt;123456&lt;/MerchantIdentifier&gt;&lt;/Header&gt;&lt;MessageType&gt;OrderFulfillment&lt;/MessageType&gt;&lt;Message&gt;&lt;MessageID&gt;1&lt;/MessageID&gt;&lt;OperationType&gt;Update&lt;/OperationType&gt;&lt;OrderFulfillment&gt;&lt;AmazonOrderID&gt;${orderid}&lt;/AmazonOrderID&gt;&lt;FulfillmentDate&gt;${currenttimestampYYYYMMDDTHHMMSSZ}&lt;/FulfillmentDate&gt;&lt;FulfillmentData&gt;&lt;CarrierName&gt;${carriername}&lt;/CarrierName&gt;&lt;ShippingMethod&gt;Standard&lt;/ShippingMethod&gt;&lt;ShipperTrackingNumber&gt;${trackingnumber}&lt;/ShipperTrackingNumber&gt;&lt;/FulfillmentData&gt;&lt;Item&gt;&lt;AmazonOrderItemCode&gt;${orderitemid}&lt;/AmazonOrderItemCode&gt;&lt;Quantity&gt;${orderitemquantity}&lt;/Quantity&gt;&lt;/Item&gt;&lt;/OrderFulfillment&gt;&lt;/Message&gt;&lt;/AmazonEnvelope&gt;}^</param>
+		<param>FeedType=_POST_ORDER_FULFILLMENT_DATA_</param>
+		<param>MarketplaceId.Id.1=${marketplaceidamazoncom}</param>
+		<param>Merchant=${selleridamazon}</param>
+		<param>PurgeAndReplace=false</param>
+		<param>SignatureMethod=HmacSHA256</param>
+		<param>SignatureVersion=2</param>
+		<param>Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}</param>
+		<param>Version=2009-01-01</param>
+		<param>Signature=^{HMACSHA256BASE64,POST&#xA;mws.amazonservices.com&#xA;/&#xA;AWSAccessKeyId=${awsaccesskeyidamazon}&amp;Action=SubmitFeed&amp;ContentMD5Value=^{MD5BASE64,&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;AmazonEnvelope xsi:noNamespaceSchemaLocation="amzn-envelope.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;&lt;Header&gt;&lt;DocumentVersion&gt;1.01&lt;/DocumentVersion&gt;&lt;MerchantIdentifier&gt;123456&lt;/MerchantIdentifier&gt;&lt;/Header&gt;&lt;MessageType&gt;OrderFulfillment&lt;/MessageType&gt;&lt;Message&gt;&lt;MessageID&gt;1&lt;/MessageID&gt;&lt;OperationType&gt;Update&lt;/OperationType&gt;&lt;OrderFulfillment&gt;&lt;AmazonOrderID&gt;${orderid}&lt;/AmazonOrderID&gt;&lt;FulfillmentDate&gt;${currenttimestampYYYYMMDDTHHMMSSZ}&lt;/FulfillmentDate&gt;&lt;FulfillmentData&gt;&lt;CarrierName&gt;${carriername}&lt;/CarrierName&gt;&lt;ShippingMethod&gt;Standard&lt;/ShippingMethod&gt;&lt;ShipperTrackingNumber&gt;${trackingnumber}&lt;/ShipperTrackingNumber&gt;&lt;/FulfillmentData&gt;&lt;Item&gt;&lt;AmazonOrderItemCode&gt;${orderitemid}&lt;/AmazonOrderItemCode&gt;&lt;Quantity&gt;${orderitemquantity}&lt;/Quantity&gt;&lt;/Item&gt;&lt;/OrderFulfillment&gt;&lt;/Message&gt;&lt;/AmazonEnvelope&gt;}^&amp;FeedType=_POST_ORDER_FULFILLMENT_DATA_&amp;MarketplaceId.Id.1=${marketplaceidamazoncom}&amp;Merchant=${selleridamazon}&amp;PurgeAndReplace=false&amp;SignatureMethod=HmacSHA256&amp;SignatureVersion=2&amp;Timestamp=${currenttimestampYYYYMMDDTHHMMSSZ}&amp;Version=2009-01-01,${secretkeyamazon}}^</param>
+		<body>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;AmazonEnvelope xsi:noNamespaceSchemaLocation="amzn-envelope.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;&lt;Header&gt;&lt;DocumentVersion&gt;1.01&lt;/DocumentVersion&gt;&lt;MerchantIdentifier&gt;123456&lt;/MerchantIdentifier&gt;&lt;/Header&gt;&lt;MessageType&gt;OrderFulfillment&lt;/MessageType&gt;&lt;Message&gt;&lt;MessageID&gt;1&lt;/MessageID&gt;&lt;OperationType&gt;Update&lt;/OperationType&gt;&lt;OrderFulfillment&gt;&lt;AmazonOrderID&gt;${orderid}&lt;/AmazonOrderID&gt;&lt;FulfillmentDate&gt;${currenttimestampYYYYMMDDTHHMMSSZ}&lt;/FulfillmentDate&gt;&lt;FulfillmentData&gt;&lt;CarrierName&gt;${carriername}&lt;/CarrierName&gt;&lt;ShippingMethod&gt;Standard&lt;/ShippingMethod&gt;&lt;ShipperTrackingNumber&gt;${trackingnumber}&lt;/ShipperTrackingNumber&gt;&lt;/FulfillmentData&gt;&lt;Item&gt;&lt;AmazonOrderItemCode&gt;${orderitemid}&lt;/AmazonOrderItemCode&gt;&lt;Quantity&gt;${orderitemquantity}&lt;/Quantity&gt;&lt;/Item&gt;&lt;/OrderFulfillment&gt;&lt;/Message&gt;&lt;/AmazonEnvelope&gt;</body>
+	</request>
+	<response type="XML">
+	</response>
+</shippingupdateapi>
 </marketplace>
