@@ -178,7 +178,7 @@ public class OrdersAPIFunctions {
                 order.setCurrencycode(extractOrderProp(orderList.get(i), ((Element) responsenode).getElementsByTagName("currencycodepattern").item(0).getTextContent()));
                 order.setQuantity(extractOrderProp(orderList.get(i), ((Element) responsenode).getElementsByTagName("quantitypattern").item(0).getTextContent()));
                 order.setItemname(extractOrderProp(orderList.get(i), ((Element) responsenode).getElementsByTagName("itemnamepattern").item(0).getTextContent()));
-                order.setItemname(extractOrderProp(orderList.get(i), ((Element) responsenode).getElementsByTagName("idpattern").item(0).getTextContent()));
+                order.setItemid(extractOrderProp(orderList.get(i), ((Element) responsenode).getElementsByTagName("idpattern").item(0).getTextContent()));
                 ol.add(order);
             }
 
